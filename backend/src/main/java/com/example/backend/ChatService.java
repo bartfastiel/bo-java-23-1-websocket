@@ -1,5 +1,7 @@
 package com.example.backend;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -10,13 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ChatService extends TextWebSocketHandler {
 
     private final List<String> history = new ArrayList<>();
 
+    private final ObjectMapper objectMapper;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        session.sendMessage(new TextMessage("Bisherige Meldungen:" + history));
+
+        String json = objectMapper.writeValueAsString(history);
+
+        session.sendMessage(new TextMessage(json));
     }
 
     @Override
